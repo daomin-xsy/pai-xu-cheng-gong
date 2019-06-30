@@ -1,80 +1,103 @@
+
 #include <iostream>
 #include <fstream>
 #include <math.h>
-#include <algorithm>     //sort排序
+#include <algorithm>      //sort
 using namespace std;
-struct Stu
+struct Student
 {
-    char index[20];
-    char college[20];
-    char name[20];
+    char index[30];
+    char college[30];
+    char name[30];
     int score[7];
+    char rename[20];
+    double average;
 };
-bool cmp(  ){      //比较平均分大小
-    return ;
+bool cmp( Student & a, Student &b ){      //比较平均分大小
+    return a.average>b.average;
 }
 int main()
 {
     ifstream out("/Users/s20181105303/Desktop/选手信息.txt");
-    int number,i,j;
+    int number,head,end;
+    double sum=0;
     out>>number;
-    Stu s[number];
-    for(i=0;i<number;i++){
-        out>>s[i].index>>s[i].college>>s[i].name;
+    Student student[number];
+    Student  refereename[7];
+    for(head=0;head<number;head++)
+    {
+        out>>student[head].index>>student[head].college>>student[head].name;
+    }
+    ifstream out1("/Users/s20181105303/Desktop/裁判信息.txt");
+    for(head=0;head<7;head++){
+        out1>>refereename[head].rename;
+        for(end=0;end<number;end++){
+            out1>>student[end].score[head];
+        }
     }
     
-    ifstream out1("/Users/s20181105303/Desktop/裁判信息.txt");
-    for(i=0;i<number;i++){
-        for(j=0;j<7;j++){
-            out1>>s[i].score[j];
-        }
-    }
-    for(i=0;i<number;i++){
+    
+    for(head=0;head<number;head++)
+    {
         int max=0;
-        for(j=0;j<7;j++){
-            if(s[i].score[j]>max){
-                max=s[i].score[j];
+        for(end=0;end<7;end++)
+        {
+            if(student[head].score[end]>max)
+            {
+                max=student[head].score[end];
             }
         }
-        for(j=0;j<7;j++){
-            if(s[i].score[j]==max){
-                s[i].score[j]=0;
+        for(end=0;end<7;end++)
+        {
+            if(student[head].score[end]==max)
+            {
+                student[head].score[end]=0;
             }
         }
     }
-    for(i=0;i<number;i++)
+    for(head=0;head<number;head++)
     {
         int min;
-        for(j=0;j<7;j++){
-            if(s[i].score[j]!=0){
-                min=s[i].score[j];
-            }
-        }
-        for(j=0;j<7;j++)
+        for(end=0;end<7;end++)
         {
-            if(s[i].score[j]<min&&s[i].score[j]!=0){
-                min=s[i].score[j];
-            }
-        }
-        for(j=0;j<7;j++)
-        {
-            if(s[i].score[j]==min)
+            if(student[head].score[end]!=0)
             {
-                s[i].score[j]=0;
+                min=student[head].score[end];
+            }
+        }
+        for(end=0;end<7;end++)
+        {
+            if(student[head].score[end]<min&&student[head].score[end]!=0)
+            {
+                min=student[head].score[end];
+            }
+        }
+        for(end=0;end<7;end++)
+        {
+            if(student[head].score[end]==min)
+            {
+                student[head].score[end]=0;
             }
         }
     }
-    sort(s,s+number,cmp);     //结构体数组首地址，末地址，自定义函数 比较结构体大小
-    ofstream in("/Users/s20181105303/Desktop/最终得分.txt");
+    for(head=0;head<number;head++)
+    {
+        sum=0;
+        for(end=0;end<7;end++)
+        {
+            sum=sum+student[head].score[end];
+        }
+        student[head].average=sum/5;
+    }
+    sort(student,student+number,cmp);   //结构体数组首地址，末地址，自定义函数 比较结构体大小
+    ofstream in("/Users/s20181105303/Desktop/最后得fen.txt");
     if(in.is_open())
     {
-        for(int i=0;i<number;i++)
+        for(head=0;head<number;head++)
         {
-            in<<s[i].index<<" "<<s[i].college<<" "<<s[i].name<<endl;
+            in<<student[head].index<<" "<<student[head].college<<" "<<student[head].name<<" "<<student[head].average<<endl;
         }
         out.close();
-        
     }
     return 0;
 }
-
